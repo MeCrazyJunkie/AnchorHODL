@@ -8,6 +8,6 @@ EXPOSE 5000
 ENV FLASK_ENV "production"
 ENV FLASK_DEBUG False
 ENV FLASK_APP "webview.py"
-ENV MNEMONIC ""
+# ENV MNEMONIC ""
 
 CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]
