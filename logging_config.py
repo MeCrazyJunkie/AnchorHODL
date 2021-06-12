@@ -17,6 +17,11 @@ LOGGING = {
         },
     },
     'handlers': {
+        'out' : {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+            'stream': 'ext://sys.stdout'
+        },
         'default': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -58,27 +63,27 @@ LOGGING = {
     },
     'loggers': {
         '': {
-            'handlers': ['default'],
+            'handlers': ['default', 'out'],
             'level': 'INFO',
             'propagate': True,
         },
         'repay_logger': {
-            'handlers': ['repay_logger'],
+            'handlers': ['repay_logger', 'out'],
             'level': 'INFO',
             'propagate': False,
         },
         'apscheduler': {
-            'handlers': ['apscheduler'],
+            'handlers': ['apscheduler', 'out'],
             'level': 'INFO',
             'propagate': False,
         },
         'werkzeug': {
-            'handlers': ['werkzeug'],
+            'handlers': ['werkzeug', 'out'],
             'level': 'INFO',
             'propagate': False,
         },
         'info_logger': {
-            'handlers': ['info_logger'],
+            'handlers': ['info_logger', 'out'],
             'level': 'INFO',
             'propagate': False,
         },
