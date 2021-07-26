@@ -15,6 +15,7 @@ from datetime import datetime
 from send_notification import slack_webhook, telegram_notification
 import os
 import logging.config
+import requests
 
 # Logging INIT
 if not os.path.exists('./logs'):
@@ -305,4 +306,9 @@ if __name__ == '__main__':
         base_logger.error("Oh no!!! Something went wrong! - keep_loan_safe() returned empty.")
     else:
         print(f"[+] {datetime.now():%d-%m-%Y %H:%M:%S} -> {keep_loan_safe}")
+        try:
+            requests.get("https://hc-ping.com/6d0cc410-5a1b-4047-8de7-943500894d34", timeout=10)
+        except requests.RequestException as e:
+            # Log ping failure here...
+            print("Ping failed: %s" % e)
 

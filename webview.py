@@ -5,14 +5,31 @@ from flask import Response, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 from anchor_loan_repay import keep_loan_safe
 from terraswap_swap_watch import run_terra_swap_price_watcher, get_luna_price_prices
-
+import requests
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 
 app = Flask(__name__)
+
+
 
 scheduler = BackgroundScheduler(daemon=True)
 scheduler .add_job(keep_loan_safe, 'interval', seconds=30)
 # scheduler .add_job(process_notifications, 'interval', minutes=3)
-scheduler .start()
+
+def my_listener(event):
+    if event.exception:
+        print('The job crashed :(')
+    else:
+        print('The job worked :)')
+        try:
+            requests.get("https://hc-ping.com/6d0cc410-5a1b-4047-8de7-943500894d34", timeout=10)
+        except requests.RequestException as e:
+            # Log ping failure here...
+            print("Ping failed: %s" % e)
+
+scheduler.add_listener(my_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
+
+scheduler.start()
 
 
 @app.route('/')
