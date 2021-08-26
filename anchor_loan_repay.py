@@ -57,6 +57,17 @@ account_address = wallet.key.acc_address
 balance = terra.bank.balance(address=account_address)
 # print(f"Balance: {balance.to_dec_coins().div(1000000)}")
 
+def get_gas_price():
+  
+  response = requests.get('https://fcd.terra.dev/v1/txs/gas_prices')
+  if response.status_code != 200:
+    return None
+
+  prices = response.json()
+
+  return prices['uusd']
+
+gas_prices = get_gas_price() + "uusd"
 
 def getting_current_loan_percent():
     """Getting loan percent by querying borrow_limit and loan_amount and return its percentage"""
@@ -133,7 +144,7 @@ def borrow_ust_from_anchor(amount):
         coins=Coins()
     ),
 
-    sendtx = wallet.create_and_sign_tx(send, gas_prices="0.15uusd", gas_adjustment=1.5)
+    sendtx = wallet.create_and_sign_tx(send, gas_prices=gas_prices, gas_adjustment=1.5)
     result = terra.tx.broadcast(sendtx)
 
     return result.txhash
@@ -162,7 +173,7 @@ def execute_loan_repay(amount):
     if(config.repay_with_max_fee):
         sendtx = wallet.create_and_sign_tx(send, fee=StdFee(1000000, fee))
     else:
-        sendtx = wallet.create_and_sign_tx(send, gas_prices="0.15uusd", gas_adjustment=1.5)
+        sendtx = wallet.create_and_sign_tx(send, gas_prices=gas_prices, gas_adjustment=1.5)
     
     result = terra.tx.broadcast(sendtx)
 
@@ -275,6 +286,8 @@ def keep_loan_safe():
             base_logger.error(line)
             line = f"Loan Repaid!!! Repay Amount: ${repay_amount:,.2f}, triggered at: {current_percent:.2%} ({config.trigger_at_percent}% trigger limit). TX: {tx_look_up}{loan_repay_tx}"
             repay_logger.warning('TX 404 ... ' + line)
+            if config.NOTIFY_TELEGRAM:
+                telegram_notification("Error loan repay tx!")
         else:
             line = f"Loan Repaid!!! Repay Amount: ${repay_amount:,.2f}, triggered at: {current_percent:.2%} ({config.trigger_at_percent}% trigger limit). TX: {tx_look_up}{loan_repay_tx}"
             # print(line)
