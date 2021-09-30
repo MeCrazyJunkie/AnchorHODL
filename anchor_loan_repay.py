@@ -28,7 +28,7 @@ repay_logger = logging.getLogger('repay_logger')
 
 
 if config.NETWORK == 'MAINNET':
-    chain_id = 'columbus-4'
+    chain_id = 'columbus-5'
     public_node_url = 'https://lcd.terra.dev'
     contact_addresses = contact_addresses(network='MAINNET')
     tx_look_up = f'https://finder.terra.money/{chain_id}/tx/'
